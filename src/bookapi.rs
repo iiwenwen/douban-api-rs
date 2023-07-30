@@ -157,8 +157,8 @@ impl DoubanBookApi {
         let document = Vis::load(&result_text).unwrap();
         let x = document.find("#wrapper");
         let title = x.find("h1>span:first-child").text().to_string();
-        let large_img = x.find("a.nbg").attr("href").unwrap().to_string();
-        let small_img = x.find("a.nbg>img").attr("src").unwrap().to_string();
+        let _large_img = x.find("a.nbg").attr("href").unwrap().to_string();
+        let _small_img = x.find("a.nbg>img").attr("src").unwrap().to_string();
         let content = x.find("#content");
         let mut tags = Vec::default();
         x.find("a.tag").map(|_index, t| {
@@ -218,10 +218,15 @@ impl DoubanBookApi {
         let subtitle = self.get_text(&info_text_map, "副标题");
         let isbn13 = self.get_text(&info_text_map, "ISBN");
         let category = String::from(""); //TODO 页面上是在找不到分类...
+        // let images = Image {
+        //     medium: large_img.clone(),
+        //     large: large_img,
+        //     small: small_img,
+        // };
         let images = Image {
-            medium: large_img.clone(),
-            large: large_img,
-            small: small_img,
+            medium: format!("https://dou.img.lithub.cc/book/{}.jpg", id),
+            large: format!("https://dou.img.lithub.cc/book/{}.jpg", id),
+            small: format!("https://dou.img.lithub.cc/book/{}.jpg", id),
         };
         let cache_key = id.clone();
         let cache_key1 = isbn13.clone();

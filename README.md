@@ -1,15 +1,50 @@
 # douban-api-rs
+
 简单的豆瓣api，主要用于配合[jellyfin-plugin-opendouban](https://github.com/caryyu/jellyfin-plugin-opendouban)插件，在jellyfin中刮削电影信息
 
+## 更新
 
+> Update: 2023-07-30
 
-## docker运行
+电影和书籍的封面图片改为 `dou.img.lithub.cc`
 
+- ref: https://github.com/lizheming/dover
+
+## Build
+
+自己编译，仅支持 Linux 环境。（已测试 Windows WSL Ubuntu）
+
+```bash
+# Build douban-api-rs by rust
+cargo build --release --target x86_64-unknown-linux-musl
+cp target/x86_64-unknown-linux-musl/release/douban-api-rs ./
+
+# Build docker image
+docker build -t eallion/douban-api-rs .
+docker push eallion/douban-api-rs
 ```
-docker run -d --name=douban-api-rs --restart=unless-stopped -p 5000:80 ghcr.io/cxfksword/douban-api-rs:latest
+
+## Docker 运行
+
+```bash
+docker run -d --name=douban-api-rs --restart=unless-stopped -p 5000:80 eallion/douban-api-rs:latest
 ```
 
-镜像名称：`ghcr.io/cxfksword/douban-api-rs`，需要使用这个带域名的完整名称才能pull下来。
+## Docker Compose
+
+```yaml
+version: "3.0"
+services:
+  memos:
+    image: eallion/douban-api-rs:test
+    container_name: douban-api-rs
+    #volumes:
+    ports:
+      - 5000:80
+    restart: always
+```
+
+镜像名称：`eallion/douban-api-rs:latest`，需要使用这个带域名的完整名称才能pull下来。
 
 绑定端口：`5000:80`
 
@@ -17,35 +52,32 @@ docker run -d --name=douban-api-rs --restart=unless-stopped -p 5000:80 ghcr.io/c
 
 `DOUBAN_COOKIE`：(可选)豆瓣web登录后的cookie字符串，填写可解决搜索不到部分需登录访问的影片
 
+## 支持的 API
 
-
-## 支持的api
-
+```text
+/movies?q={movie_name}  # 搜索电影
+/movies?q={movie_name}&type=full  # 搜索电影并获取详细信息
+/movies/{sid}  # 获取指定电影信息
+/movies/{sid}/celebrities  # 获取演员列表
+/celebrities/{cid}  # 获取演员信息
+/photo/{sid} # 获取电影壁纸
+/v2/book/search?q={book_name}&count=2  # 搜索书籍 `count` 可不传,默认为 2，最大 20，为返回书籍信息数量
+/v2/book/isbn/{isbn}  # 获取指定isbn的书籍
+/v2/book/id/{sid}  # 获取指定id的书籍
 ```
-/movies?q={movie_name}                  # 搜索电影
-/movies?q={movie_name}&type=full        # 搜索电影并获取详细信息
-/movies/{sid}                           # 获取指定电影信息
-/movies/{sid}/celebrities               # 获取演员列表
-/celebrities/{cid}                      # 获取演员信息
-/photo/{sid}                            # 获取电影壁纸
-/v2/book/search?q={book_name}&count=2   # 搜索书籍  count可不传,默认为2, 最大20,  为返回书籍信息数量
-/v2/book/isbn/{isbn}                    # 获取指定isbn的书籍
-/v2/book/id/{sid}                       # 获取指定id的书籍
-```
-
 
 ## 返回结果示例
 
 搜索：
 
-```
+```json
 [
     {
         "cat": "电影",
         "sid": "26862259",
         "name": "乘风破浪 ",
         "rating": "6.8",
-        "img": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2408407697.jpg",
+        "img": "https://dou.img.lithub.cc/movie/26862259.jpg",
         "year": " 2017"
     },
     {
@@ -53,21 +85,20 @@ docker run -d --name=douban-api-rs --restart=unless-stopped -p 5000:80 ghcr.io/c
         "sid": "34894589",
         "name": "乘风破浪的姐姐 第一季 ",
         "rating": "6.8",
-        "img": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2608297477.jpg",
+        "img": "https://dou.img.lithub.cc/movie/34894589.jpg",
         "year": "2020"
     }
 ]
 ```
 
-
 获取电影信息：
 
-```
+```json
 {
     "sid": "26862259",
     "name": "乘风破浪",
     "rating": "6.8",
-    "img": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2408407697.jpg",
+    "img": "https://dou.img.lithub.cc/movie/26862259.jpg",
     "year": "2017",
     "intro": "赛车手阿浪（邓超 饰）一直对父亲（彭于晏 饰）反对自己的赛车事业耿耿于怀，在向父亲证明自己的过程中，阿浪却意外卷入了一场奇妙的冒险。他在这段经历中结识了一群兄弟好友，一同闯过许多奇幻的经历，也对自己的身世有了更多的了解。",
     "director": "导演",
@@ -94,7 +125,7 @@ docker run -d --name=douban-api-rs --restart=unless-stopped -p 5000:80 ghcr.io/c
 
 获取演员信息：
 
-```
+```json
 {
     "id": "1274235",
     "img": "https://img2.doubanio.com/icon/u183170142-13.jpg",

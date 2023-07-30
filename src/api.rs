@@ -85,7 +85,7 @@ impl Douban {
         }
     }
 
-    pub async fn search(&self, q: &str, limit: i32, image_size: &str) -> Result<Vec<Movie>> {
+    pub async fn search(&self, q: &str, limit: i32, _image_size: &str) -> Result<Vec<Movie>> {
         let mut vec = Vec::new();
         if q.is_empty() {
             return Ok(vec);
@@ -120,15 +120,16 @@ impl Douban {
                             Some(onclick) => onclick.to_string(),
                             None => String::new(),
                         };
-                        let img = self.get_img_by_size(
-                            x.find("a.nbg>img")
-                                .attr("src")
-                                .unwrap()
-                                .to_string()
-                                .as_str(),
-                            image_size,
-                        );
+                        // let img = self.get_img_by_size(
+                        //     x.find("a.nbg>img")
+                        //         .attr("src")
+                        //         .unwrap()
+                        //         .to_string()
+                        //         .as_str(),
+                        //     image_size,
+                        // );
                         let sid = self.parse_sid(&onclick);
+                        let img = format!("https://dou.img.lithub.cc/movie/{}.jpg", sid);
                         let name = x.find("div.title a").text().to_string();
                         let title_mark = x.find("div.title>h3>span").text().to_string();
                         let cat = self.parse_cat(&title_mark);
@@ -208,14 +209,15 @@ impl Douban {
         if rating.is_empty() {
             rating = "0".to_string();
         }
-        let img = self.get_img_by_size(
-            x.find("a.nbgnbg>img")
-                .attr("src")
-                .unwrap()
-                .to_string()
-                .as_str(),
-            image_size,
-        );
+        // let img = self.get_img_by_size(
+        //     x.find("a.nbgnbg>img")
+        //         .attr("src")
+        //         .unwrap()
+        //         .to_string()
+        //         .as_str(),
+        //     image_size,
+        // );
+        let img = format!("https://dou.img.lithub.cc/movie/{}.jpg", sid);
 
         let intro = x.find("div.indent>span").text().trim().replace("©豆瓣", "");
         let info = x.find("#info").text().to_string();
@@ -311,7 +313,8 @@ impl Douban {
                     .next()
                     .unwrap_or("")
                     .to_string();
-                let mut role = match self.re_role.captures(x.find("div.info span.role").text()) {
+                let mut role = match self.re_role.captures(&x.find("div.info span.role").text()) {
+                //let mut role = match self.re_role.captures(x.find("div.info span.role").text()) {
                     Some(x) => x.get(1).unwrap().as_str().trim().to_string(),
                     None => String::new(),
                 };

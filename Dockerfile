@@ -8,7 +8,8 @@ echo "Asia/Shanghai" > /etc/timezone && \
 apk del tzdata
 
 WORKDIR /data/
-ADD douban-api-rs-$TARGETARCH$TARGETVARIANT /usr/bin/douban-api-rs
+# ADD douban-api-rs-$TARGETARCH$TARGETVARIANT /usr/bin/douban-api-rs
+ADD douban-api-rs /usr/bin/douban-api-rs
 
 # 生成启动脚本
 RUN printf '#!/bin/sh \n\n\
