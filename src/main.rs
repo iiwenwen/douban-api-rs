@@ -210,7 +210,6 @@ async fn main() -> std::io::Result<()> {
             .service(books)
             .service(book_by_isbn)
             .service(proxy)
-            .allowed_origin("https://doubanapi.syaoran.me/")
     })
     .bind((opt.host, opt.port))?
     .run()
