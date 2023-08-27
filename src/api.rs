@@ -657,6 +657,31 @@ impl Douban {
 
         return img_url;
     }
+    pub fn with_cors(self) -> Self {
+        // 设置允许的源，这里设置为允许所有来源
+        let allowed_origins = AllowedOrigins::all();
+
+        // 配置 CORS
+        let cors = CorsOptions {
+            allowed_origins,
+            allowed_methods: vec![Method::Get, Method::Post, Method::Options] // 添加其他允许的方法
+                .into_iter()
+                .map(From::from)
+                .collect(),
+            allowed_headers: AllowedHeaders::all(), // 允许所有请求头
+            allow_credentials: true, // 允许携带凭证信息
+            ..Default::default()
+        }
+        .to_cors()
+        .expect("Error building CORS");
+
+        // 将 CORS 附加到 self，并返回
+        Self {
+            // 其他成员变量
+            cors,
+            // 将其他成员变量添加到这里
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
