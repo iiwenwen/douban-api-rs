@@ -657,9 +657,6 @@ impl Douban {
 
         return img_url;
     }
-    pub fn with_cors(self) -> Self {
-        // 设置允许的源，这里设置为允许所有来源
-        let allowed_origins = AllowedOrigins::all();
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
