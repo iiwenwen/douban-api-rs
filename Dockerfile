@@ -17,7 +17,8 @@ RUN printf '#!/bin/sh \n\n\
 /usr/bin/douban-api-rs --port 80  \n\
 \n\
 ' > /entrypoint.sh && \
-chmod +x /entrypoint.sh
+chmod +x /entrypoint.sh && \
+chmod +x /usr/bin/douban-api-rs
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/entrypoint.sh"]
