@@ -15,23 +15,6 @@ use serde::Deserialize;
 use std::env;
 use std::sync::Arc;
 
-async fn main() -> std::io::Result<()> {
-  HttpServer::new(move || {
-    App::new()
-      .wrap(
-        Cors::new()
-          .allowed_origin("*.syaoran.me")
-          .allowed_methods(vec!["GET"])
-          .max_age(3600)
-          .finish(),
-      )
-      .route("/resource", web::get().to(index))
-  })
-  .bind("127.0.0.1:5584")?
-  .run()
-  .await
-}
-
 #[get("/")]
 async fn index() -> impl Responder {
     HttpResponse::Ok()
@@ -195,7 +178,9 @@ async fn main() -> std::io::Result<()> {
     let client = Arc::new(HttpClient::new(Opt::parse()));
 
     HttpServer::new(move || {
+        let cors = Cors::permissive();
         App::new()
+            .wrap(cors)
             .wrap(middleware::Logger::default())
             .app_data(web::Data::new(Douban::new(Arc::clone(&client))))
             .app_data(web::Data::new(DoubanBookApi::new(Arc::clone(&client))))
