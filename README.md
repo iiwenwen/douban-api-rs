@@ -141,3 +141,4 @@ services:
     "family": "孙俪(妻)"
 }
 ```
+注：该版本中添加了actix-cors以解决跨域问题。默认使用permissive函数允许所有链接。
